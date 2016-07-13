@@ -24,7 +24,7 @@ class PySSC:
 		elif sys.platform == 'linux2':
 			self.pdll = CDLL('ssc.so')   # instead of relative path, require user to have on LD_LIBRARY_PATH
 		else:
-			print "Platform not supported ", sys.platform
+			print("Platform not supported ", sys.platform)
 
 
 	INVALID=0
@@ -52,9 +52,11 @@ class PySSC:
 		self.pdll.ssc_data_clear( c_void_p(p_data) )
 
 	def data_unassign(self, p_data, name):
+		name = name.encode('ascii')
 		self.pdll.ssc_data_unassign( c_void_p(p_data), c_char_p(name) )
 
 	def data_query(self, p_data, name):
+		name = name.encode('ascii')
 		self.pdll.ssc_data_query.restype = c_int
 		return self.pdll.ssc_data_query( c_void_p(p_data), c_char_p(name) )
 
@@ -67,19 +69,24 @@ class PySSC:
 		return self.pdll.ssc_data_next( c_void_p(p_data) )
 
 	def data_set_string(self, p_data, name, value):
+		name = name.encode('ascii')
+		value = value.encode('ascii')
 		self.pdll.ssc_data_set_string( c_void_p(p_data), c_char_p(name), c_char_p(value) )
 
 	def data_set_number(self, p_data, name, value):
+		name = name.encode('ascii')
 		self.pdll.ssc_data_set_number( c_void_p(p_data), c_char_p(name), c_number(value) )
 
-	def data_set_array(self,p_data,name,parr):
+	def data_set_array(self, p_data, name, parr):
+		name = name.encode('ascii')
 		count = len(parr)
 		arr = (c_number*count)()
 		arr[:] = parr # set all at once instead of looping
 			
-		return self.pdll.ssc_data_set_array( c_void_p(p_data), c_char_p(name),pointer(arr), c_int(count))
+		return self.pdll.ssc_data_set_array( c_void_p(p_data), c_char_p(name), pointer(arr), c_int(count))
 
-	def data_set_matrix(self,p_data,name,mat):
+	def data_set_matrix(self, p_data, name, mat):
+		name = name.encode('ascii')
 		nrows = len(mat)
 		ncols = len(mat[0])
 		size = nrows*ncols
@@ -92,25 +99,30 @@ class PySSC:
 		return self.pdll.ssc_data_set_matrix( c_void_p(p_data), c_char_p(name),pointer(arr), c_int(nrows), c_int(ncols))
 
 	def data_set_table(self,p_data,name,tab):
+		name = name.encode('ascii')
 		return self.pdll.ssc_data_set_table( c_void_p(p_data), c_char_p(name), c_void_p(tab) );
 
 	def data_get_string(self, p_data, name):
+		name = name.encode('ascii')
 		self.pdll.ssc_data_get_string.restype = c_char_p
 		return self.pdll.ssc_data_get_string( c_void_p(p_data), c_char_p(name) )
 
 	def data_get_number(self, p_data, name):
+		name = name.encode('ascii')
 		val = c_number(0)
 		self.pdll.ssc_data_get_number( c_void_p(p_data), c_char_p(name), byref(val) )
 		return val.value
 
-	def data_get_array(self,p_data,name):
+	def data_get_array(self, p_data, name):
+		name = name.encode('ascii')
 		count = c_int()
 		self.pdll.ssc_data_get_array.restype = POINTER(c_number)
 		parr = self.pdll.ssc_data_get_array( c_void_p(p_data), c_char_p(name), byref(count))
 		arr = parr[0:count.value] # extract all at once			
 		return arr
 
-	def data_get_matrix(self,p_data,name):
+	def data_get_matrix(self, p_data, name):
+		name = name.encode('ascii')
 		nrows = c_int()
 		ncols = c_int()
 		self.pdll.ssc_data_get_matrix.restype = POINTER(c_number)
@@ -147,6 +159,7 @@ class PySSC:
 		return self.pdll.ssc_entry_version( c_void_p(p_entry) )
 
 	def module_create(self,name):
+		name = name.encode('ascii')
 		self.pdll.ssc_module_create.restype = c_void_p
 		return self.pdll.ssc_module_create( c_char_p(name) )
 
@@ -193,6 +206,7 @@ class PySSC:
 		ssc_module_exec_simple_nothread
 		
 	def module_exec_simple_no_thread( self, modname, data ):
+		modname = modname.encode('ascii')
 		self.pdll.ssc_module_exec_simple_nothread.restype = c_char_p;
 		return self.pdll.ssc_module_exec_simple_nothread( c_char_p(modname), c_void_p(data) );
 
@@ -234,23 +248,23 @@ if __name__ == "__main__":
 		mod = ssc.module_create("windpower")	
 		ssc.module_exec_set_print( 0 );
 		if ssc.module_exec(mod, data) == 0:
-			print 'wind power simulation error'
+			print('wind power simulation error')
 			idx = 1
 			msg = ssc.module_log(mod, 0)
 			while (msg != None):
-				print '\t: ' + msg
+				print('\t: ' + msg)
 				msg = ssc.module_log(mod, idx)
 				idx = idx + 1
 		else:
 			ann = ssc.data_get_number(data, "annual_energy")
-			print 'wind power Simulation ok, annual energy (kwh) =', ann
+			print('wind power Simulation ok, annual energy (kwh) =', ann)
 
 		ssc.module_free(mod)
 
 	
 	def run_test1():
 		wf = 'C:/Users/adobos/Projects/SAMnt/deploy/wind_resource/WY Southern-Flat Lands.srw';
-		print wf
+		print(wf)
 		
 		ssc = PySSC()
 		dat = ssc.data_create()
@@ -311,16 +325,16 @@ if __name__ == "__main__":
 		mod = ssc.module_create("pvwattsv5")	
 		ssc.module_exec_set_print( 0 );
 		if ssc.module_exec(mod, data) == 0:
-			print 'PVWatts V5 simulation error'
+			print('PVWatts V5 simulation error')
 			idx = 1
 			msg = ssc.module_log(mod, 0)
 			while (msg != None):
-				print '\t: ' + msg
+				print('\t: ' + msg)
 				msg = ssc.module_log(mod, idx)
 				idx = idx + 1
 		else:
 			ann = ssc.data_get_number(data, "ac_annual")
-			print 'PVWatts V5 Simulation ok, e_net (annual kW)=', ann
+			print('PVWatts V5 Simulation ok, e_net (annual kW)=', ann)
 
 		ssc.module_free(mod)
 
@@ -328,7 +342,7 @@ if __name__ == "__main__":
 		#wf = 'c:/Users/adobos/Projects/SAMnt/tests/Weather Files/user-germany-potsdam-2011-1-min-samcsv.csv' ;
 		wf = 'C:/Users/adobos/Projects/SAMnt/deploy/solar_resource/USA NC Greensboro (TMY2).csv';
 
-		print wf
+		print(wf)
 		
 		ssc = PySSC()
 		dat = ssc.data_create()
