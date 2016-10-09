@@ -87,3 +87,10 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# JetBrains
+.idea
+.idea/*
+.idea/*.xml
+
+*.dylib
