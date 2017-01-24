@@ -15,8 +15,8 @@ class TestCashLoan(unittest.TestCase):
         dat = ssc.data_create()
 
         ssc.data_set_number(dat, 'analysis_period', 25)
-        ssc.data_set_number(dat, 'federal_tax_rate', 30)
-        ssc.data_set_number(dat, 'state_tax_rate', 7)
+        ssc.data_set_array(dat, 'federal_tax_rate', [30])
+        ssc.data_set_array(dat, 'state_tax_rate', [7])
         ssc.data_set_number(dat, 'property_tax_rate', 1)
         ssc.data_set_number(dat, 'prop_tax_cost_assessed_percent', 100)
         ssc.data_set_number(dat, 'prop_tax_assessed_decline', 0)
