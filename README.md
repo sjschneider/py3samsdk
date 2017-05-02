@@ -1,5 +1,5 @@
 # py3samsdk
-Python 3 wrapper for NREL's System Advisor Model SDK.
+Python 2/3 wrapper for NREL's System Advisor Model SDK.
 
 At the moment, this package is compatible with the January 17, 2017 SAM SDK release.  The core interface is a modified version of NREL's Python 2 API.
 
