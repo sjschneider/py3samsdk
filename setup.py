@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='py3samsdk',
-    version='0.1.0',
+    version='0.1.1',
     author='Stephen J. Schneider',
     author_email='stesch@alumni.stanford.edu',
     packages=['py3samsdk'],
